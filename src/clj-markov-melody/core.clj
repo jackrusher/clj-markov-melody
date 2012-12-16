@@ -90,6 +90,12 @@
  (make-score-from-notes
   (markov-melody (concat twinkle alouette) 16) 120 jm.JMC/FLUTE))
 
+(def plainsong (load-midi "midi/plainsong.mid"))
+
+(View/notate
+ (make-score-from-notes
+  (markov-melody (concat twinkle alouette plainsong) 32) 120 jm.JMC/FLUTE))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; and, as a bonus, some poetry
 
