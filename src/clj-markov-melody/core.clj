@@ -51,17 +51,18 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; example with music
 
-(def old-macdonald (load-midi "midi/old_macdonald.mid"))
+;; Ah! vous dirai-je, Maman
+(def twinkle (load-midi "midi/twinkle_twinkle.mid"))
 
 ;; the original melody
 (View/notate
- (make-score-from-notes old-macdonald 120 jm.JMC/FLUTE))
+ (make-score-from-notes twinkle 120 jm.JMC/FLUTE))
 
 ;; produce a very similar random melody based on transitions between
 ;; pitch/duration tuples (i.e. "notes")
 (View/notate
  (make-score-from-notes
-  (markov-chain (transitions old-macdonald) 12) 120 jm.JMC/FLUTE))
+  (markov-chain (transitions twinkle) 12) 120 jm.JMC/FLUTE))
 
 ;; produce a less similar permutation by considering pitch and duration
 ;; transitions separately, then recombining them
@@ -74,9 +75,9 @@
 
 (View/notate
  (make-score-from-notes
-  (markov-melody old-macdonald 16) 120 jm.JMC/FLUTE))
+  (markov-melody twinkle 16) 120 jm.JMC/FLUTE))
 
-;; a nicer source melody
+;; Alouette, gentille Alouette -- produces nicer melodies
 (def alouette (load-midi "midi/alouette.mid"))
 
 (View/notate
