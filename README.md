@@ -10,6 +10,7 @@ root of the project tree.
 
 Copyright © 2012 Jack Rusher
 
+`
 ;; ----------------------------------------------------------------------------
 ;; "THE TEA-WARE LICENSE" (Revision 1.414):
 ;; <jack@rusher.com> wrote this file. As long as you retain this notice you
@@ -17,3 +18,4 @@ Copyright © 2012 Jack Rusher
 ;; this stuff is worth it, you can buy me a cup of tea in return.
 ;; (See also: [Beerware](http://en.wikipedia.org/wiki/Beerware#License))
 ;; ----------------------------------------------------------------------------
+`
