@@ -121,7 +121,10 @@ And pluck till time and times are done,
 The silver apples of the moon,
 The golden apples of the sun.") ;; -- Yeats
 
-(markov-chain (transitions (filter #(and (not (nil? %)) (> (.length %) 0)) (.split (.toLowerCase wandering-aengus) "[^\\w]"))) 10)
+(markov-chain
+ (transitions
+  (filter #(and (not (nil? %)) (> (.length %) 0))
+          (.split (.toLowerCase wandering-aengus) "[^\\w]"))) 10)
 ;; => ["wandering" "through" "hollow" "lands" "i" "had" "become" "a"
 ;; "hazel" "wand"]
 ;; => ["girl" "with" "apple" "blossom" "in" "her" "hands" "and"
