@@ -77,12 +77,18 @@
  (make-score-from-notes
   (markov-melody twinkle 16) 120 jm.JMC/FLUTE))
 
-;; Alouette, gentille Alouette -- produces nicer melodies
+;; Alouette, gentille Alouette
 (def alouette (load-midi "midi/alouette.mid"))
 
 (View/notate
  (make-score-from-notes
   (markov-melody alouette 16) 120 jm.JMC/FLUTE))
+
+;; a random melody from the combination of twinkle and alouette
+;; (N.B. works well because I've transposed them to the same key)
+(View/notate
+ (make-score-from-notes
+  (markov-melody (concat twinkle alouette) 16) 120 jm.JMC/FLUTE))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; and, as a bonus, some poetry
