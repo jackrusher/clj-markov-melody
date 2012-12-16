@@ -90,6 +90,7 @@
  (make-score-from-notes
   (markov-melody (concat twinkle alouette) 16) 120 jm.JMC/FLUTE))
 
+;; plainsong transcribed by Satie, a nice additive
 (def plainsong (load-midi "midi/plainsong.mid"))
 
 (View/notate
