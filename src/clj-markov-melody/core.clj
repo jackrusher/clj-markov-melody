@@ -43,17 +43,13 @@
   (loop [value (rand-nth (keys trans)) part []]
     (if (>= (count part) len)
       part
-      (recur (rand-nth (trans value)) (conj part value)))))
+      (recur (if (not (empty? (trans value)))
+               (rand-nth (trans value))
+               (rand-nth (keys trans)))
+             (conj part value)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; example with music
-
-(defn markov-melody
-  "Return a random melody of length 'len' based on 'notes'"
-  [notes len]
-  (map #(Note. %1 %2)
-       (markov-chain (transitions (map #(.getPitch %) notes)) len)
-       (markov-chain (transitions (map #(.getDuration %) notes)) len)))
 
 ;; the original melody
 (View/notate
@@ -62,10 +58,26 @@
   120
   jm.JMC/FLUTE))
 
-;; one random permutation each time
+;; produce a very similar random melody based on transitions between
+;; pitch/duration tuples (i.e. "notes")
 (View/notate
  (make-score-from-notes
-  (markov-melody (load-midi "midi/old_macdonald.mid") 12)
+  (markov-chain (transitions (load-midi "midi/old_macdonald.mid")) 12)
+  120
+  jm.JMC/FLUTE))
+
+;; produce a less similar permutation by considering pitch and duration
+;; transitions separately, then recombining them
+(defn markov-melody
+  "Return a random melody of length 'len' based on 'notes'"
+  [notes len]
+  (map #(Note. %1 %2)
+       (markov-chain (transitions (map #(.getPitch %) notes)) len)
+       (markov-chain (transitions (map #(.getDuration %) notes)) len)))
+
+(View/notate
+ (make-score-from-notes
+  (markov-melody (load-midi "midi/old_macdonald.mid") 16)
   120
   jm.JMC/FLUTE))
 
