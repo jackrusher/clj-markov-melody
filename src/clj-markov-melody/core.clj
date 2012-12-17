@@ -41,7 +41,7 @@
 (defn transitions
   "Produces a transition table for the production of markov chains from one or more sequences"
   [& values]
-  (into {}
+  (apply merge-with concat
     (map #(reduce (fn [accum [k v]] (assoc accum k (conj (get accum k) v))) {}
                   (partition 2 1 %)) values)))
 
@@ -96,7 +96,7 @@
 ;; (N.B. works well because I've transposed them to the same key)
 (View/notate
  (make-score-from-notes
-  (markov-melody (concat twinkle alouette) 16) 120 jm.JMC/FLUTE))
+  (markov-chain (transitions twinkle alouette) 16) 120 jm.JMC/FLUTE))
 
 ;; plainsong transcribed by Satie, a nice mixer for these others
 (def plainsong (load-midi "midi/plainsong.mid"))
