@@ -1,4 +1,6 @@
 (ns clj-markov-melody.core
+  (:refer-clojure :exclude [==])
+  (:require [clojure.core.logic :as l])
   (:require [cemerick.pomegranate :as pom]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -9,13 +11,15 @@
 (import (jm.music.data Note Score Part Phrase))
 (import (jm.util Read))
 (import (jm.util View))
+(import (jm.util Play))
 
 (defn load-midi
-  "Returns jMusic Note objects for the 0th track of MIDI file filename"
+  "Returns a sequence of pitch/duration pairs for the 0th track of MIDI file filename"
   [filename]
   (let [score (Score. filename)]
     (Read/midi score filename)
-    (.getNoteList (.getPhrase (.getPart score 0) 0))))
+    (map #(vector (.getPitch %) (.getDuration %))
+     (.getNoteList (.getPhrase (.getPart score 0) 0)))))
 
 (defn make-score-from-notes
   "Produce a jMusic Score from a seq of jMusic notes"
@@ -23,19 +27,23 @@
   (let [score  (Score. )
         phrase (Phrase. )]
     (do
-      (doseq [n notes] (.addNote phrase n))
+      (doseq [n notes] (.addNote phrase (Note. (first n) (second n))))
       (.addPart score (Part. phrase "melody" inst))
       (.setTempo score tempo))
     score))
+
+;; jMusic sometimes gets wedged; this call shuts it up.
+(defn stop-midi [] (Play/midi (Note. 45 1.0)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Markov chain routines
 
 (defn transitions
-  "Produces a transition table for the production of markov chains"
-  [values]
-  (reduce (fn [accum [k v]] (assoc accum k (conj (get accum k) v))) {}
-          (partition 2 1 values)))
+  "Produces a transition table for the production of markov chains from one or more sequences"
+  [& values]
+  (into {}
+    (map #(reduce (fn [accum [k v]] (assoc accum k (conj (get accum k) v))) {}
+                  (partition 2 1 %)) values)))
 
 (defn markov-chain
   "Return a random chain of length len using transition table trans"
@@ -69,9 +77,9 @@
 (defn markov-melody
   "Return a random melody of length 'len' based on 'notes'"
   [notes len]
-  (map #(Note. %1 %2)
-       (markov-chain (transitions (map #(.getPitch %) notes)) len)
-       (markov-chain (transitions (map #(.getDuration %) notes)) len)))
+  (map #(vector %1 %2)
+       (markov-chain (transitions (map #(first %) notes)) len)
+       (markov-chain (transitions (map #(second %) notes)) len)))
 
 (View/notate
  (make-score-from-notes
@@ -90,12 +98,18 @@
  (make-score-from-notes
   (markov-melody (concat twinkle alouette) 16) 120 jm.JMC/FLUTE))
 
-;; plainsong transcribed by Satie, a nice additive
+;; plainsong transcribed by Satie, a nice mixer for these others
 (def plainsong (load-midi "midi/plainsong.mid"))
 
 (View/notate
  (make-score-from-notes
-  (markov-melody (concat twinkle alouette plainsong) 32) 120 jm.JMC/FLUTE))
+  (markov-chain (transitions twinkle alouette plainsong) 16)
+  120
+  jm.JMC/FLUTE))
+
+(View/notate
+ (make-score-from-notes
+  (markov-melody (concat twinkle alouette plainsong) 16) 120 jm.JMC/FLUTE))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; and, as a bonus, some poetry
